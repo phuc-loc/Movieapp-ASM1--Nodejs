@@ -4,4 +4,4 @@ const videoController = require('../controller/video')
 
 router.post('/video', videoController.postTrailer);
 
-module.exports = router;  
+module.exports = router;

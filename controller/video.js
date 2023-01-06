@@ -4,14 +4,13 @@ const VideoModel = require('../model/video');
 const splitDate = (date) => {
     // console.log("date:", date);
     date = date.substr(0, 10);
-
     const result = {
-        day: parseInt(date.split("-")[2]),
+        day: parseInt( date.split("-")[2] ),
         month: parseInt(date.split("-")[1]),
         year: parseInt(date.split("-")[0]),
     };
 
-    return result; 
+    return result;
 };
 
 //Hàm tìm trailer mới nhất
@@ -48,8 +47,8 @@ const findLatestTrailer = (list) => {
 };
 
 
-exports.postTrailer = (request, response) => {
-    
+exports.postTrailer = (request, response) => {  
+    // console.log('//request', request.body);
     const movieID = request.body.id;
  
     if (!movieID) {
@@ -58,35 +57,38 @@ exports.postTrailer = (request, response) => {
         response.status(400).end();
     }
 
-    VideoModel.fetchAll((videos) => {
+    VideoModel.fetchAll( (videos) => {
         // lọc trailer theo request id
-        const movieTrailer = videos.find((video) => video.id === movieID);
+        const movieTrailer = videos.find( (video) => video.id === movieID);
 
-        if (movieTrailer != undefined) {
-            // 2 điều kiện là youtube và type là trailer 
+        if (movieTrailer) { //Có
+            //Điều kiện là youte 
             const officialYoutubes = movieTrailer.videos.filter(
                 (video) => video.official == true && video.site === "YouTube"
             );
+            
+            //Điều kiện là Trailer hoặc Teaser 
             let trailer = officialYoutubes.filter(
                 (video) => video.type === "Trailer"
             );
-
-            // lọc teaser nếu phim không có trailer
-            if (trailer.length == 0) {
-                trailer = officialYoutubes.filter((video) => video.type === "Teaser");
+            if (trailer.length === 0) {
+                trailer = officialYoutubes.filter(
+                    (video) => video.type === "Teaser"
+                );
             }
 
             //có kết quả thoả các điều kiện trên 
             if (trailer.length === 1) {
                 trailer = trailer[0];
-                response.send(trailer);
+                response.json( trailer );
             } else {
                 // tìm trailer mới nhất nếu có nhiều hơn 1 
-                trailer = findLatestTrailer(trailer);
-                response.send(trailer);
+                trailer = findLatestTrailer( trailer );
+                response.json(trailer);
             }
-        } else {
-            console.log(`Not found trailer id:${movieID}`);
+
+        } else { //Không có
+            console.log(`Not found trailer id: ${movieID}`);
             response.statusMessage = `Not found trailer video for id:${movieID}`;
             response.status(404).end();
         }

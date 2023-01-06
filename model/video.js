@@ -16,12 +16,10 @@ const getDataFromFile = (cb) => {
     )
 } 
 
-class VideoModel {
-
-    static fetchtAll(cb) {
+class VideoModel { 
+    static fetchAll(cb) {
         getDataFromFile(cb);
         // console.log("fetchtAll")
     }
-
 }
-module.exports = VideoModel
+module.exports = VideoModel;
